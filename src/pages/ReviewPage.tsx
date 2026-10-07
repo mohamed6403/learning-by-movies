@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { AnswerButtons } from '../components/AnswerButtons';
+import { ClipPlayer, type ClipPlayerHandle } from '../components/ClipPlayer';
 import { Flashcard } from '../components/Flashcard';
+import { VideoPicker } from '../components/VideoPicker';
 import { answerCard, editBack, getTitleCards, newCardsSeenToday } from '../db/actions';
 import { backText, db, type CardRecord, type Title } from '../db/schema';
-import { getSettings } from '../db/settings';
+import { getSettings, useSettings } from '../db/settings';
+import { useTitleVideo } from '../hooks/video';
 import { splitIntoSequences } from '../services/sequences';
 import { ANSWERS, buildQueue, isDueToday, needsAnotherLook, State, type Grade } from '../services/srs';
 import { episodeLabel } from '../utils/format';
@@ -56,6 +59,8 @@ export function ReviewPage() {
   const [busy, setBusy] = useState(false);
   const [reviewed, setReviewed] = useState(0);
   const editingRef = useRef(false);
+  const player = useRef<ClipPlayerHandle>(null);
+  const { autoPlay, clipPadding } = useSettings();
 
   useEffect(() => {
     let alive = true;
@@ -71,6 +76,7 @@ export function ReviewPage() {
 
   const card = session?.queue[pos];
   const title = card ? session?.titles.get(card.titleId) : undefined;
+  const { video } = useTitleVideo(card?.titleId);
 
   const answer = useCallback(
     async (rating: Grade) => {
@@ -107,6 +113,10 @@ export function ReviewPage() {
         if (target.closest('button, a') && e.key === 'Enter') return;
         e.preventDefault();
         setFlipped((f) => !f);
+        return;
+      }
+      if (e.key === 'p' || e.key === 'P') {
+        player.current?.play();
         return;
       }
       const a = ANSWERS.find((x) => x.key === e.key);
@@ -170,6 +180,17 @@ export function ReviewPage() {
         <div className="h-full bg-indigo-500 transition-all" style={{ width: `${(pos / session.queue.length) * 100}%` }} />
       </div>
 
+      {video && (
+        <ClipPlayer
+          ref={player}
+          src={video.url}
+          start={card.start}
+          end={card.end}
+          padding={clipPadding}
+          playToken={autoPlay ? pos + 1 : 0}
+        />
+      )}
+
       <Flashcard
         key={`${card.id}-${pos}`}
         front={card.front}
@@ -182,6 +203,15 @@ export function ReviewPage() {
         onFlip={() => setFlipped((f) => !f)}
         onEditBack={saveBack}
         onEditingChange={(v) => (editingRef.current = v)}
+        actions={
+          video ? (
+            <button type="button" className="btn btn-sm" onClick={() => player.current?.play()}>
+              ▶ Play clip <kbd className="font-mono opacity-60">P</kbd>
+            </button>
+          ) : (
+            <VideoPicker titleId={card.titleId} compact />
+          )
+        }
         caption={
           title && (
             <>
@@ -200,7 +230,7 @@ export function ReviewPage() {
         </button>
       )}
       <p className="muted hidden text-center text-xs sm:block">
-        Space = flip · 0 Again · 1 Hard · 2 OK · 3 Easy
+        Space = flip · 0 Again · 1 Hard · 2 OK · 3 Easy{video ? ' · P = play clip' : ''}
       </p>
     </div>
   );

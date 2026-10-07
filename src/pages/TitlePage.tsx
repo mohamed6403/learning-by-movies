@@ -1,12 +1,15 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { ClipPlayer, type ClipPlayerHandle } from '../components/ClipPlayer';
 import { OffsetTuner } from '../components/OffsetTuner';
 import { ProgressBar } from '../components/ProgressBar';
 import { SequenceList } from '../components/SequenceList';
+import { VideoPicker } from '../components/VideoPicker';
 import { deleteTitle, getTitleCards, getTranslationCues, resetTitleProgress } from '../db/actions';
-import { db } from '../db/schema';
+import { db, type CardRecord } from '../db/schema';
 import { useSettings } from '../db/settings';
+import { useTitleVideo } from '../hooks/video';
 import { splitIntoSequences } from '../services/sequences';
 import { computeProgress } from '../services/stats';
 import { episodeLabel, formatOffset } from '../utils/format';
@@ -15,8 +18,12 @@ export function TitlePage() {
   const id = Number(useParams().id);
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { gapSeconds } = useSettings();
+  const { gapSeconds, clipPadding } = useSettings();
   const [showSync, setShowSync] = useState(params.has('new'));
+  const { video } = useTitleVideo(id);
+  const [clip, setClip] = useState<CardRecord | null>(null);
+  const [playToken, setPlayToken] = useState(0);
+  const player = useRef<ClipPlayerHandle>(null);
 
   // null = not found, undefined = still loading
   const title = useLiveQuery(async () => (await db.titles.get(id)) ?? null, [id]);
@@ -76,10 +83,48 @@ export function TitlePage() {
         </div>
       </section>
 
+      <section className="panel flex flex-col gap-3 p-4">
+        <VideoPicker titleId={title.id} lastName={title.videoName} />
+        {video && (
+          <ClipPlayer
+            ref={player}
+            src={video.url}
+            start={(clip ?? cards[0])?.start ?? 0}
+            end={(clip ?? cards[0])?.end ?? 0}
+            padding={clipPadding}
+            playToken={playToken}
+          />
+        )}
+      </section>
+
       {showSync && <OffsetTuner title={title} cards={cards} translation={translation} sequences={sequences} />}
 
       <h2 className="mt-2 font-semibold">Sequences</h2>
-      <SequenceList title={title} sequences={sequences} />
+      <SequenceList
+        title={title}
+        sequences={sequences}
+        cardActions={
+          video
+            ? (card) => (
+                <button
+                  type="button"
+                  className="btn btn-sm shrink-0"
+                  aria-label="Play clip"
+                  onClick={() => {
+                    if (clip?.id === card.id) player.current?.play();
+                    else {
+                      setClip(card);
+                      setPlayToken((t) => t + 1);
+                    }
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  ▶
+                </button>
+              )
+            : undefined
+        }
+      />
 
       <section className="mt-6 flex flex-wrap gap-2 border-t border-slate-200 pt-4 dark:border-slate-800">
         <span className="muted w-full text-xs">

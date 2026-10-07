@@ -2,6 +2,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { useSettings } from './db/settings';
 import { useTheme } from './hooks/useTheme';
+import { VideoProvider } from './hooks/video';
 import { ImportPage } from './pages/ImportPage';
 import { LibraryPage } from './pages/LibraryPage';
 import { ReviewPage } from './pages/ReviewPage';
@@ -14,7 +15,8 @@ export function App() {
   useTheme(theme);
 
   return (
-    <HashRouter>
+    <VideoProvider>
+      <HashRouter>
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<LibraryPage />} />
@@ -25,6 +27,7 @@ export function App() {
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>
-    </HashRouter>
+      </HashRouter>
+    </VideoProvider>
   );
 }
