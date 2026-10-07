@@ -1,0 +1,44 @@
+1
+00:00:01,000 --> 00:00:03,200
+<i>Where were you last night?</i>
+
+2
+00:00:03,500 --> 00:00:05,000
+I was at the library,
+
+3
+00:00:05,100 --> 00:00:06,800
+studying for the exam.
+
+4
+00:00:07,000 --> 00:00:08,500
+[door creaks]
+
+5
+00:00:09,000 --> 00:00:11,000
+- Really?
+- Yes, really.
+
+6
+00:00:20,000 --> 00:00:22,500
+♪ Good morning, sunshine ♪
+
+7
+00:00:23,000 --> 00:00:25,000
+We need to talk about the money.
+
+8
+00:00:25,400 --> 00:00:27,600
+I know. I'm sorry.
+
+9
+00:00:28,000 --> 00:00:30,500
+Let's go before it gets dark.
+
+10
+00:00:45,000 --> 00:00:47,000
+Have you ever seen the ocean?
+
+11
+00:00:47,500 --> 00:00:50,000
+Never. But one day I will.
