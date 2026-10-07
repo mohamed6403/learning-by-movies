@@ -26,7 +26,7 @@ export function Layout() {
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-slate-50/85 backdrop-blur dark:border-slate-800 dark:bg-slate-950/85">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
           <NavLink to="/" className="flex items-center gap-2 font-semibold tracking-tight">
-            <img src="/favicon.svg" alt="" className="h-7 w-7" />
+            <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-7 w-7" />
             SubCards
           </NavLink>
           <nav className="hidden gap-1 sm:flex">

@@ -38,7 +38,7 @@ export function LibraryPage() {
   if (data.titles.length === 0) {
     return (
       <div className="flex flex-col items-center gap-4 py-16 text-center">
-        <img src="/favicon.svg" alt="" className="h-16 w-16" />
+        <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-16 w-16" />
         <h1 className="text-2xl font-semibold">Learn English with subtitles</h1>
         <p className="muted max-w-sm">
           Add a movie, series or anime with its English subtitles and a translation in Arabic or French. Every English

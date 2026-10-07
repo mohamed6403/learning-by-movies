@@ -1,5 +1,6 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import { UpdatePrompt } from './components/UpdatePrompt';
 import { useSettings } from './db/settings';
 import { useTheme } from './hooks/useTheme';
 import { VideoProvider } from './hooks/video';
@@ -28,6 +29,7 @@ export function App() {
         </Route>
       </Routes>
       </HashRouter>
+      <UpdatePrompt />
     </VideoProvider>
   );
 }

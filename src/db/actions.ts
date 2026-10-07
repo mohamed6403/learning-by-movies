@@ -10,9 +10,9 @@ export async function createTitle(title: NewTitle, english: Cue[], translation: 
   const drafts = buildCardDrafts(english, translation, title.offset);
   const now = new Date();
   return db.transaction('rw', db.titles, db.cards, db.translations, async () => {
-    const titleId = await db.titles.add({ ...title, createdAt: now } as Title);
-    await db.translations.bulkAdd(translation.map((t, index) => ({ ...t, index, titleId }) as never));
-    await db.cards.bulkAdd(drafts.map((d) => ({ ...d, ...newSrsFields(now), titleId }) as never));
+    const titleId = await db.titles.add({ ...title, createdAt: now });
+    await db.translations.bulkAdd(translation.map((t, index) => ({ ...t, index, titleId })));
+    await db.cards.bulkAdd(drafts.map((d) => ({ ...d, ...newSrsFields(now), titleId })));
     return titleId;
   });
 }
@@ -67,7 +67,7 @@ export async function answerCard(card: CardRecord, rating: Grade, now = new Date
       wasNew: card.state === State.New,
       reviewedAt: now,
       day: dayKey(now),
-    } as never);
+    });
   });
   return updated;
 }
